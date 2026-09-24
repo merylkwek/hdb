@@ -145,7 +145,17 @@ export const OneMapTokenModal: React.FC<OneMapTokenModalProps> = ({
   };
 
   const copyEndpointsToClipboard = () => {
-    const text = `# Mint a token (POST, JSON body {"email":"...","password":"..."}; lasts 3 days):\nhttps://www.onemap.gov.sg/api/auth/post/getToken\n\n# Geocode / search (Authorization header now officially required):\nhttps://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&returnGeom=Y&getAddrDetails=Y&pageNum=1`;
+    const text = `# Mint a token (POST, JSON body {"email":"...","password":"..."}; lasts 3 days):
+https://www.onemap.gov.sg/api/auth/post/getToken
+
+# Geocode / search (Authorization header now officially required):
+https://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&returnGeom=Y&getAddrDetails=Y&pageNum=1
+
+# Reverse geocode (token required):
+https://www.onemap.gov.sg/api/public/revgeocode?location=1.3,103.8&buffer=40&addressType=All
+
+# Routing: walk | drive | cycle | pt (token required):
+https://www.onemap.gov.sg/api/public/routingsvc/route?start=1.320981,103.844150&end=1.326762,103.8559&routeType=walk`;
     navigator.clipboard.writeText(text);
     setCopiedEndpoints(true);
     setTimeout(() => setCopiedEndpoints(false), 2000);
@@ -153,14 +163,14 @@ export const OneMapTokenModal: React.FC<OneMapTokenModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg border border-slate-200 max-w-xl w-full flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-white rounded-lg border border-slate-200 max-w-xl w-full flex flex-col shadow-2xl overflow-hidden max-h-[90vh]">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
           <div className="flex items-center gap-2">
             <KeyRound className="w-5 h-5 text-slate-800" />
             <div>
               <h2 className="text-base font-bold text-slate-900">
-                OneMap SLA API Token & Search Auth
+                OneMap SLA API Token & Services Auth
               </h2>
               <p className="text-xs text-slate-500">
                 Singapore Land Authority Official Map Services Integration
@@ -176,23 +186,23 @@ export const OneMapTokenModal: React.FC<OneMapTokenModalProps> = ({
           </button>
         </div>
 
-        {/* API Specification Banner with Both Endpoints */}
-        <div className="bg-slate-900 text-slate-200 p-3.5 text-xs font-mono border-b border-slate-800 space-y-2">
+        {/* API Specification Banner with All 4 Endpoints */}
+        <div className="bg-slate-900 text-slate-200 p-3.5 text-xs font-mono border-b border-slate-800 space-y-2 overflow-y-auto max-h-48">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
               <Terminal className="w-3.5 h-3.5" />
-              <span>SLA OneMap API Contracts:</span>
+              <span>SLA OneMap API Contracts (All 4 Endpoints):</span>
             </div>
             <button
               onClick={copyEndpointsToClipboard}
               className="text-[11px] px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 flex items-center gap-1 cursor-pointer transition-colors"
             >
               {copiedEndpoints ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedEndpoints ? 'Copied' : 'Copy Both'}</span>
+              <span>{copiedEndpoints ? 'Copied' : 'Copy All 4'}</span>
             </button>
           </div>
 
-          <div className="bg-slate-950 p-2 rounded border border-slate-800 text-[11px] space-y-1">
+          <div className="bg-slate-950 p-2 rounded border border-slate-800 text-[10px] space-y-0.5">
             <p className="text-slate-400">
               # Mint a token (POST, JSON body &#123;"email":"...","password":"..."&#125;; lasts 3 days):
             </p>
@@ -201,12 +211,30 @@ export const OneMapTokenModal: React.FC<OneMapTokenModalProps> = ({
             </p>
           </div>
 
-          <div className="bg-slate-950 p-2 rounded border border-slate-800 text-[11px] space-y-1">
+          <div className="bg-slate-950 p-2 rounded border border-slate-800 text-[10px] space-y-0.5">
             <p className="text-amber-400 font-medium">
               # Geocode / search (Authorization header now officially required):
             </p>
             <p className="text-sky-300 break-all select-all">
-              https://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&returnGeom=Y&getAddrDetails=Y&pageNum=1
+              https://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&amp;returnGeom=Y&amp;getAddrDetails=Y&amp;pageNum=1
+            </p>
+          </div>
+
+          <div className="bg-slate-950 p-2 rounded border border-slate-800 text-[10px] space-y-0.5">
+            <p className="text-purple-400 font-medium">
+              # Reverse geocode (token required):
+            </p>
+            <p className="text-sky-300 break-all select-all">
+              https://www.onemap.gov.sg/api/public/revgeocode?location=1.3,103.8&amp;buffer=40&amp;addressType=All
+            </p>
+          </div>
+
+          <div className="bg-slate-950 p-2 rounded border border-slate-800 text-[10px] space-y-0.5">
+            <p className="text-sky-400 font-medium">
+              # Routing: walk | drive | cycle | pt (token required):
+            </p>
+            <p className="text-sky-300 break-all select-all">
+              https://www.onemap.gov.sg/api/public/routingsvc/route?start=1.320981,103.844150&amp;end=1.326762,103.8559&amp;routeType=walk
             </p>
           </div>
         </div>

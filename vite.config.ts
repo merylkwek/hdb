@@ -25,6 +25,18 @@ export default defineConfig(() => {
           rewrite: (path) => path.replace(/^\/api\/onemap\/search/, '/api/common/elastic/search'),
           secure: false,
         },
+        '/api/onemap/revgeocode': {
+          target: 'https://www.onemap.gov.sg',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/onemap\/revgeocode/, '/api/public/revgeocode'),
+          secure: false,
+        },
+        '/api/onemap/route': {
+          target: 'https://www.onemap.gov.sg',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/onemap\/route/, '/api/public/routingsvc/route'),
+          secure: false,
+        },
       },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modify—file watching is disabled to prevent flickering during agent edits.
