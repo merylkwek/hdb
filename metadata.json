@@ -1,0 +1,7 @@
+{
+  "name": "Houselytics Affordability Explorer",
+  "description": "Interactive housing affordability and flat budget explorer with price trends, lease analysis, geocoded map, and data annotations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
