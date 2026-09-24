@@ -27,7 +27,8 @@ import {
   Trash2,
   ArrowRight,
   Route as RouteIcon,
-  LocateFixed
+  LocateFixed,
+  Activity
 } from 'lucide-react';
 import { FlatTransaction, GeocoderResult, FlatType } from '../types/housing';
 import { SINGAPORE_TOWNS, getTownSummaries } from '../data/singaporeHousingData';
@@ -50,6 +51,7 @@ import {
 } from '../utils/onemap';
 import { OneMapTokenModal } from './OneMapTokenModal';
 import { OneMapLeafletView } from './OneMapLeafletView';
+import { ApiHealthModal } from './ApiHealthModal';
 
 interface GeocoderMapProps {
   dataset: FlatTransaction[];
@@ -73,6 +75,7 @@ export const GeocoderMap: React.FC<GeocoderMapProps> = ({
   
   // OneMap Token Authentication & Search State
   const [isTokenModalOpen, setIsTokenModalOpen] = useState<boolean>(false);
+  const [isApiHealthModalOpen, setIsApiHealthModalOpen] = useState<boolean>(false);
   const [tokenState, setTokenState] = useState<StoredOneMapAuth>(getStoredOneMapToken());
   const [searchResults, setSearchResults] = useState<OneMapSearchResultItem[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -530,6 +533,15 @@ https://www.onemap.gov.sg/api/public/routingsvc/route?start=1.320981,103.844150&
             >
               <LocateFixed className="w-3.5 h-3.5" />
               <span>RevGeo 1.3, 103.8</span>
+            </button>
+
+            <button
+              onClick={() => setIsApiHealthModalOpen(true)}
+              className="px-2.5 py-1.5 text-xs bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 rounded border border-emerald-700/50 transition-colors flex items-center gap-1 cursor-pointer font-mono"
+              title="Inspect SLA API Health Status"
+            >
+              <Activity className="w-3.5 h-3.5 text-emerald-400" />
+              <span>API Health</span>
             </button>
 
             <button
@@ -1115,6 +1127,12 @@ https://www.onemap.gov.sg/api/public/routingsvc/route?start=1.320981,103.844150&
         onClose={() => setIsTokenModalOpen(false)}
         tokenState={tokenState}
         onTokenUpdated={setTokenState}
+      />
+
+      {/* API Health Status Monitor Modal */}
+      <ApiHealthModal
+        isOpen={isApiHealthModalOpen}
+        onClose={() => setIsApiHealthModalOpen(false)}
       />
     </div>
   );

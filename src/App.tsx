@@ -6,10 +6,11 @@ import { GeocoderMap } from './components/GeocoderMap';
 import { FlatListingsTable } from './components/FlatListingsTable';
 import { SupabaseStudio } from './components/SupabaseStudio';
 import { PrototypePlanModal } from './components/PrototypePlanModal';
+import { ApiHealthModal } from './components/ApiHealthModal';
 import { HOUSING_DATASET } from './data/singaporeHousingData';
 import { FlatTransaction } from './types/housing';
 import { getBalasTableFactor } from './utils/financialCalculators';
-import { X, MapPin, Maximize2, Clock, Calculator, ShieldCheck, Tag } from 'lucide-react';
+import { X, MapPin, Maximize2, Clock, Calculator, ShieldCheck, Tag, Activity } from 'lucide-react';
 
 export default function App() {
   const [dataset, setDataset] = useState<FlatTransaction[]>(HOUSING_DATASET);
@@ -17,6 +18,7 @@ export default function App() {
   const [selectedTown, setSelectedTown] = useState<string>('TAMPINES');
   const [inspectedFlat, setInspectedFlat] = useState<FlatTransaction | null>(null);
   const [isBlueprintOpen, setIsBlueprintOpen] = useState<boolean>(false);
+  const [isApiHealthOpen, setIsApiHealthOpen] = useState<boolean>(false);
 
   // Update annotation on a flat record
   const handleAnnotateFlat = (flatId: string, annotationText: string, tag: string) => {
@@ -55,6 +57,7 @@ export default function App() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onOpenBlueprint={() => setIsBlueprintOpen(true)}
+        onOpenApiHealth={() => setIsApiHealthOpen(true)}
         transactionCount={dataset.length}
       />
 
@@ -120,12 +123,21 @@ export default function App() {
 
           <div className="flex items-center gap-4">
             <button
+              onClick={() => setIsApiHealthOpen(true)}
+              className="text-emerald-700 hover:text-emerald-900 font-medium flex items-center gap-1 cursor-pointer"
+            >
+              <Activity className="w-3.5 h-3.5 text-emerald-600" />
+              <span>API Health Status</span>
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
               onClick={() => setIsBlueprintOpen(true)}
               className="text-slate-700 hover:text-slate-900 font-medium underline cursor-pointer"
             >
-              Prototype Instructions & Architecture Plan
+              Architecture Plan
             </button>
-            <span>MAS 30% MSR Amortization Engine</span>
+            <span aria-hidden="true">·</span>
+            <span>MAS 30% MSR Engine</span>
           </div>
         </div>
       </footer>
@@ -239,6 +251,12 @@ export default function App() {
       <PrototypePlanModal
         isOpen={isBlueprintOpen}
         onClose={() => setIsBlueprintOpen(false)}
+      />
+
+      {/* API Health Status Monitor Modal */}
+      <ApiHealthModal
+        isOpen={isApiHealthOpen}
+        onClose={() => setIsApiHealthOpen(false)}
       />
     </div>
   );

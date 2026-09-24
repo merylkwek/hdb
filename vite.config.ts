@@ -1,11 +1,32 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vite';
+import {defineConfig, Plugin} from 'vite';
+
+function apiHealthPlugin(): Plugin {
+  return {
+    name: 'api-health-plugin',
+    configureServer(server) {
+      server.middlewares.use('/api/health', async (req, res, next) => {
+        if (req.method === 'GET') {
+          try {
+            const { handleHealthRequest } = await import('./api/health');
+            return handleHealthRequest(req, res);
+          } catch (err: any) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            return res.end(JSON.stringify({ error: err?.message || 'Health check failed' }));
+          }
+        }
+        next();
+      });
+    },
+  };
+}
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), apiHealthPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
