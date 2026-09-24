@@ -2,6 +2,9 @@
 // OneMap Singapore (SLA) Integration Utility
 // # Mint a token (POST, JSON body {"email":"...","password":"..."}; lasts 3 days):
 // https://www.onemap.gov.sg/api/auth/post/getToken
+//
+// # Geocode / search (Authorization header now officially required):
+// https://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&returnGeom=Y&getAddrDetails=Y&pageNum=1
 // ==============================================================================
 
 export interface OneMapTokenResult {
@@ -40,6 +43,13 @@ export interface OneMapSearchResponse {
   error?: string;
 }
 
+export interface OneMapSearchExecution {
+  items: OneMapSearchResultItem[];
+  totalFound: number;
+  isAuthorized: boolean;
+  errorMessage?: string;
+}
+
 const STORAGE_KEY_TOKEN = 'houselytics_onemap_token';
 const STORAGE_KEY_EXPIRY = 'houselytics_onemap_expiry';
 const STORAGE_KEY_EMAIL = 'houselytics_onemap_email';
@@ -59,7 +69,7 @@ export async function mintOneMapToken(email: string, password: string): Promise<
   // Try via local proxy first, then fallback to direct endpoint (CORS supported)
   const endpoints = [
     '/api/onemap/token',
-    'https://www.onemap.gov.sg/api/auth/post/getToken'
+    'https://www.onemap.gov.sg/api/auth/post/getToken',
   ];
 
   let lastError = 'Failed to connect to OneMap authentication service.';
@@ -112,7 +122,7 @@ export function saveOneMapToken(token: string, expiryTimestamp?: number | string
       ? new Date(expiryTimestamp).getTime() 
       : (expiryTimestamp || Date.now() + 3 * 24 * 60 * 60 * 1000);
 
-    localStorage.setItem(STORAGE_KEY_TOKEN, token);
+    localStorage.setItem(STORAGE_KEY_TOKEN, token.trim());
     localStorage.setItem(STORAGE_KEY_EXPIRY, expiry.toString());
     if (email) {
       localStorage.setItem(STORAGE_KEY_EMAIL, email);
@@ -166,41 +176,78 @@ export function clearOneMapToken(): void {
 }
 
 /**
- * Search Singapore addresses using OneMap Elastic Search API.
- * GET https://www.onemap.gov.sg/api/common/elastic/search?searchVal=...&returnGeom=Y&getAddrDetails=Y&pageNum=1
+ * Geocode / Search Singapore addresses using OneMap Elastic Search API.
+ * # Geocode / search (Authorization header now officially required):
+ * https://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&returnGeom=Y&getAddrDetails=Y&pageNum=1
  */
-export async function searchOneMap(query: string, token?: string): Promise<OneMapSearchResultItem[]> {
-  if (!query || query.trim().length === 0) return [];
+export async function searchOneMapWithMeta(
+  query: string, 
+  token?: string | null, 
+  pageNum: number = 1
+): Promise<OneMapSearchExecution> {
+  if (!query || query.trim().length === 0) {
+    return { items: [], totalFound: 0, isAuthorized: !!token };
+  }
 
-  const encoded = encodeURIComponent(query.trim());
+  const encodedVal = encodeURIComponent(query.trim());
+  const queryString = `searchVal=${encodedVal}&returnGeom=Y&getAddrDetails=Y&pageNum=${pageNum}`;
+
   const endpoints = [
-    `/api/onemap/search?searchVal=${encoded}&returnGeom=Y&getAddrDetails=Y&pageNum=1`,
-    `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${encoded}&returnGeom=Y&getAddrDetails=Y&pageNum=1`,
+    `https://www.onemap.gov.sg/api/common/elastic/search?${queryString}`,
+    `/api/onemap/search?${queryString}`,
   ];
 
   const headers: Record<string, string> = {
     'Accept': 'application/json',
   };
 
+  // OneMap officially expects 'Authorization: <token>' or 'Authorization: Bearer <token>'
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = token;
   }
 
   for (const url of endpoints) {
     try {
       const res = await fetch(url, { headers });
-      if (!res.ok) continue;
-
       const data: OneMapSearchResponse = await res.json();
-      if (data && Array.isArray(data.results)) {
-        return data.results;
-      }
+
+      const hasAuthError = !!(data.error && data.error.toLowerCase().includes('token'));
+      const items = Array.isArray(data.results) ? data.results : [];
+      const totalFound = data.found || items.length;
+
+      return {
+        items,
+        totalFound,
+        isAuthorized: !hasAuthError && !!token,
+        errorMessage: data.error,
+      };
     } catch (e) {
-      // Try next endpoint
+      // Continue to next endpoint fallback
     }
   }
 
-  return [];
+  return {
+    items: [],
+    totalFound: 0,
+    isAuthorized: false,
+    errorMessage: 'Network error communicating with OneMap Geocode API.',
+  };
+}
+
+/**
+ * Simplified address search helper returning array of results
+ */
+export async function searchOneMap(query: string, token?: string | null): Promise<OneMapSearchResultItem[]> {
+  const result = await searchOneMapWithMeta(query, token);
+  return result.items;
+}
+
+/**
+ * Live test OneMap search endpoint using the official sample:
+ * "raffles place" (Authorization header officially required)
+ */
+export async function testOneMapRafflesPlaceSearch(token?: string | null): Promise<OneMapSearchExecution> {
+  return searchOneMapWithMeta('raffles place', token, 1);
 }
 
 /**

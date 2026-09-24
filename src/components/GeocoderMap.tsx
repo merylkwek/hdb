@@ -233,40 +233,66 @@ export const GeocoderMap: React.FC<GeocoderMapProps> = ({
     : { x: 78, y: 48 };
 
   const copyTokenCommand = () => {
-    const cmd = `# Mint a token (POST, JSON body {"email":"...","password":"..."}; lasts 3 days):\nhttps://www.onemap.gov.sg/api/auth/post/getToken`;
+    const cmd = `# Mint a token (POST, JSON body {"email":"...","password":"..."}; lasts 3 days):
+https://www.onemap.gov.sg/api/auth/post/getToken
+
+# Geocode / search (Authorization header now officially required):
+https://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&returnGeom=Y&getAddrDetails=Y&pageNum=1`;
     navigator.clipboard.writeText(cmd);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
+  const handleTestRafflesPlace = () => {
+    setAddressSearch('raffles place');
+    setShowDropdown(true);
+  };
+
   return (
     <div className="space-y-6">
-      {/* OneMap SLA Token Authentication Banner */}
+      {/* OneMap SLA Token Authentication & Search Banner */}
       <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 text-white">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-sky-500/20 text-sky-300 border border-sky-500/30">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-sky-500/20 text-sky-300 border border-sky-500/30 font-semibold">
                 SLA ONEMAP v2
               </span>
-              <span className="text-xs font-mono text-slate-400">
-                # Mint a token (POST, JSON body &#123;"email":"...","password":"..."&#125;; lasts 3 days)
+              <span className="text-xs font-mono text-emerald-400">
+                # Mint a token (lasts 3 days): /api/auth/post/getToken
+              </span>
+              <span className="text-xs font-mono text-amber-300">
+                # Geocode / search (Authorization header now officially required)
               </span>
             </div>
-            <p className="text-xs font-mono text-emerald-400 flex items-center gap-1.5 break-all">
-              <Terminal className="w-3.5 h-3.5 shrink-0" />
-              <span>https://www.onemap.gov.sg/api/auth/post/getToken</span>
-            </p>
+
+            <div className="bg-slate-950 p-2.5 rounded border border-slate-800 font-mono text-[11px] space-y-1">
+              <div className="text-slate-400 truncate">
+                POST https://www.onemap.gov.sg/api/auth/post/getToken
+              </div>
+              <div className="text-sky-300 truncate">
+                GET https://www.onemap.gov.sg/api/common/elastic/search?searchVal=raffles%20place&amp;returnGeom=Y&amp;getAddrDetails=Y&amp;pageNum=1
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            <button
+              onClick={handleTestRafflesPlace}
+              className="px-2.5 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-sky-300 rounded border border-slate-700 transition-colors flex items-center gap-1 cursor-pointer font-mono"
+              title="Test sample query raffles place"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Test "raffles place"</span>
+            </button>
+
             <button
               onClick={copyTokenCommand}
               className="px-2.5 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
               title="Copy endpoint specification"
             >
               {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedCode ? 'Copied' : 'Copy Spec'}</span>
+              <span>{copiedCode ? 'Copied' : 'Copy Specs'}</span>
             </button>
 
             <button
@@ -276,7 +302,7 @@ export const GeocoderMap: React.FC<GeocoderMapProps> = ({
               <KeyRound className="w-3.5 h-3.5" />
               <span>
                 {tokenState.token && !tokenState.isExpired
-                  ? `Token Active (${tokenState.hoursRemaining}h)`
+                  ? `Authorized (${tokenState.hoursRemaining}h)`
                   : 'Mint 3-Day OneMap Token'}
               </span>
             </button>
