@@ -9,7 +9,8 @@ import {
   Clock, 
   Maximize2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  MapPin
 } from 'lucide-react';
 import { FlatTransaction, FlatType } from '../types/housing';
 import { SINGAPORE_TOWNS } from '../data/singaporeHousingData';
@@ -21,6 +22,7 @@ interface FlatListingsTableProps {
   onSelectTown: (town: string) => void;
   onSelectFlat: (flat: FlatTransaction) => void;
   onAnnotateFlat: (flatId: string, annotation: string, tag: string) => void;
+  onNavigateToMap?: () => void;
 }
 
 export const FlatListingsTable: React.FC<FlatListingsTableProps> = ({
@@ -29,6 +31,7 @@ export const FlatListingsTable: React.FC<FlatListingsTableProps> = ({
   onSelectTown,
   onSelectFlat,
   onAnnotateFlat,
+  onNavigateToMap,
 }) => {
   const [flatTypeFilter, setFlatTypeFilter] = useState<FlatType | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -144,17 +147,29 @@ export const FlatListingsTable: React.FC<FlatListingsTableProps> = ({
               Singapore HDB Flats Directory
             </h1>
             <p className="text-sm text-slate-600 mt-0.5">
-              Joined dataset combining floor area (sqm), remaining lease, and Tab05 geocoded coordinates.
+              Searchable resale transaction records with floor area (sqm), remaining lease, and Bala's Table leasehold valuation.
             </p>
           </div>
 
-          <button
-            onClick={exportCsv}
-            className="px-3.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded-md transition-colors flex items-center gap-1.5 self-start md:self-auto cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-600" />
-            <span>Export Filtered CSV ({filteredListings.length})</span>
-          </button>
+          <div className="flex items-center gap-2 self-start md:self-auto">
+            {onNavigateToMap && (
+              <button
+                onClick={onNavigateToMap}
+                className="px-3.5 py-1.5 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                <span>View on Flats Map</span>
+              </button>
+            )}
+
+            <button
+              onClick={exportCsv}
+              className="px-3.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-slate-600" />
+              <span>Export CSV ({filteredListings.length})</span>
+            </button>
+          </div>
         </div>
 
         {/* Filter Controls Bar */}

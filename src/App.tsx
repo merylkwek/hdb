@@ -3,6 +3,7 @@ import { Header, AppTab } from './components/Header';
 import { BudgetExplorer } from './components/BudgetExplorer';
 import { MarketTrends } from './components/MarketTrends';
 import { FlatListingsTable } from './components/FlatListingsTable';
+import { FlatsMapTab } from './components/FlatsMapTab';
 import { HOUSING_DATASET } from './data/singaporeHousingData';
 import { FlatTransaction } from './types/housing';
 import { getBalasTableFactor } from './utils/financialCalculators';
@@ -64,6 +65,7 @@ export default function App() {
             }}
             onSelectFlat={setInspectedFlat}
             onNavigateToDirectory={() => setActiveTab('directory')}
+            onNavigateToMap={() => setActiveTab('map')}
           />
         )}
 
@@ -75,6 +77,14 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'map' && (
+          <FlatsMapTab
+            dataset={dataset}
+            onSelectFlat={setInspectedFlat}
+            initialTown={selectedTown !== 'ALL' ? selectedTown : undefined}
+          />
+        )}
+
         {activeTab === 'directory' && (
           <FlatListingsTable
             dataset={dataset}
@@ -82,6 +92,7 @@ export default function App() {
             onSelectTown={setSelectedTown}
             onSelectFlat={setInspectedFlat}
             onAnnotateFlat={handleAnnotateFlat}
+            onNavigateToMap={() => setActiveTab('map')}
           />
         )}
       </main>

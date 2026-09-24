@@ -20,6 +20,7 @@ interface BudgetExplorerProps {
   onSelectTown: (town: string) => void;
   onSelectFlat: (flat: FlatTransaction) => void;
   onNavigateToDirectory?: () => void;
+  onNavigateToMap?: () => void;
 }
 
 export const BudgetExplorer: React.FC<BudgetExplorerProps> = ({
@@ -27,6 +28,7 @@ export const BudgetExplorer: React.FC<BudgetExplorerProps> = ({
   onSelectTown,
   onSelectFlat,
   onNavigateToDirectory,
+  onNavigateToMap,
 }) => {
   // Budget State
   const [budgetInputs, setBudgetInputs] = useState<BudgetInputs>({
@@ -615,17 +617,28 @@ export const BudgetExplorer: React.FC<BudgetExplorerProps> = ({
               </table>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-500 mt-2.5">
+            <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 mt-2.5 gap-2">
               <span>Displaying 23 Singapore HDB towns sorted by geographic region</span>
-              {onNavigateToDirectory && (
-                <button
-                  onClick={onNavigateToDirectory}
-                  className="text-slate-800 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Browse Flats in Directory</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              )}
+              <div className="flex items-center gap-3">
+                {onNavigateToMap && (
+                  <button
+                    onClick={onNavigateToMap}
+                    className="text-emerald-700 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>View on Flats Map</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-emerald-600" />
+                  </button>
+                )}
+                {onNavigateToDirectory && (
+                  <button
+                    onClick={onNavigateToDirectory}
+                    className="text-slate-800 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Browse Directory</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

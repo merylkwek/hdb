@@ -1,7 +1,7 @@
 import React from 'react';
-import { Building2, SlidersHorizontal, TrendingUp, Building } from 'lucide-react';
+import { Building2, SlidersHorizontal, TrendingUp, Building, MapPin } from 'lucide-react';
 
-export type AppTab = 'budget' | 'trends' | 'directory';
+export type AppTab = 'budget' | 'trends' | 'map' | 'directory';
 
 interface HeaderProps {
   activeTab: AppTab;
@@ -57,6 +57,18 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <button
+            onClick={() => onTabChange('map')}
+            className={`px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              activeTab === 'map'
+                ? 'bg-slate-100 text-slate-900 font-semibold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            }`}
+          >
+            <MapPin className="w-4 h-4 text-emerald-600" />
+            <span>Flats Map</span>
+          </button>
+
+          <button
             onClick={() => onTabChange('directory')}
             className={`px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === 'directory'
@@ -91,6 +103,12 @@ export const Header: React.FC<HeaderProps> = ({
           className={`px-3 py-1.5 text-xs whitespace-nowrap rounded cursor-pointer ${activeTab === 'trends' ? 'bg-slate-900 text-white font-medium' : 'text-slate-600'}`}
         >
           Price Trends
+        </button>
+        <button
+          onClick={() => onTabChange('map')}
+          className={`px-3 py-1.5 text-xs whitespace-nowrap rounded cursor-pointer ${activeTab === 'map' ? 'bg-slate-900 text-white font-medium' : 'text-slate-600'}`}
+        >
+          Flats Map
         </button>
         <button
           onClick={() => onTabChange('directory')}
