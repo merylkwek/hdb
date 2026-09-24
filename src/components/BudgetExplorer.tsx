@@ -19,14 +19,14 @@ interface BudgetExplorerProps {
   dataset: FlatTransaction[];
   onSelectTown: (town: string) => void;
   onSelectFlat: (flat: FlatTransaction) => void;
-  onNavigateToMap: () => void;
+  onNavigateToDirectory?: () => void;
 }
 
 export const BudgetExplorer: React.FC<BudgetExplorerProps> = ({
   dataset,
   onSelectTown,
   onSelectFlat,
-  onNavigateToMap,
+  onNavigateToDirectory,
 }) => {
   // Budget State
   const [budgetInputs, setBudgetInputs] = useState<BudgetInputs>({
@@ -617,13 +617,15 @@ export const BudgetExplorer: React.FC<BudgetExplorerProps> = ({
 
             <div className="flex items-center justify-between text-xs text-slate-500 mt-2.5">
               <span>Displaying 23 Singapore HDB towns sorted by geographic region</span>
-              <button
-                onClick={onNavigateToMap}
-                className="text-slate-800 font-semibold hover:underline flex items-center gap-1"
-              >
-                <span>View on Tab05 Geocoded Map</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              {onNavigateToDirectory && (
+                <button
+                  onClick={onNavigateToDirectory}
+                  className="text-slate-800 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Browse Flats in Directory</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
