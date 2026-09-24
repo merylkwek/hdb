@@ -80,5 +80,5 @@ export interface GeocoderResult {
   svy21_x: number;
   svy21_y: number;
   confidence: number;
-  source: 'Tab05_Master_Geocoder' | 'SLA_Address_Index';
+  source: 'Tab05_Master_Geocoder' | 'SLA_Address_Index' | 'OneMap_SLA_Official';
 }
